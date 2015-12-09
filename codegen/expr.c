@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+//#include "register.h"
 
 extern int error_count;
 
@@ -814,7 +815,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			fprintf(f,".data\n");
 			fprintf(f,".STR%d: ",string_count);
 			string_count++;
-			fprintf(f,".string ",e->string_literal);
+			fprintf(f,".string ");
 			expr_get_string(e,f);
 			fprintf(f,"\n");
 			fprintf(f,".text\n");

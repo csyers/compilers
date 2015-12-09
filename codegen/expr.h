@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "global.h"
+#include "register.h"
 
 int error_count;
 

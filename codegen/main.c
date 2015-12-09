@@ -187,7 +187,7 @@ void codegen(char *file, char *outfile){
 		}
 		FILE* f = fopen(outfile,"w");
 		if(f==NULL){
-			printf("error: cannot open file (%s) for writing\n");
+			printf("error: cannot open file (%s) for writing\n",outfile);
 			exit(1);
 		}
 		decl_codegen(program,f);
