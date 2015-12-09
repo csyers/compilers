@@ -800,6 +800,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			register_free(e->left->reg);
 			break;
 		case EXPR_NAME:
+			printf("doing EXPR_NAME\n");
 			e->reg = register_alloc();
 			symbol_code(e->symbol,reg_name);
 			fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));
@@ -839,7 +840,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
 			fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			fprintf(f,"\tJL .L%d\n",label_count);
+			fprintf(f,"\tJLE .L%d\n",label_count);
 			label_count++;
 			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
 			fprintf(f,"\tJMP .L%d\n",label_count);
@@ -854,7 +855,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
 			fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			fprintf(f,"\tJG .L%d\n",label_count);
+			fprintf(f,"\tJGE .L%d\n",label_count);
 			label_count++;
 			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
 			fprintf(f,"\tJMP .L%d\n",label_count);
@@ -869,13 +870,13 @@ void expr_codegen( struct expr *e, FILE* f)
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
 			fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			fprintf(f,"\tJLE .L%d\n",label_count);
+			fprintf(f,"\tJL .L%d\n",label_count);
 			label_count++;
-			fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
 			fprintf(f,"\tJMP .L%d\n",label_count);
 			label_count++;
 			fprintf(f,".L%d:\n",label_count-2);
-			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
 			fprintf(f,".L%d:\n",label_count-1);
 			register_free(e->left->reg);
 			e->reg = e->right->reg;
@@ -884,13 +885,13 @@ void expr_codegen( struct expr *e, FILE* f)
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
 			fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			fprintf(f,"\tJGE .L%d\n",label_count);
+			fprintf(f,"\tJG .L%d\n",label_count);
 			label_count++;
-			fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
 			fprintf(f,"\tJMP .L%d\n",label_count);
 			label_count++;
 			fprintf(f,".L%d:\n",label_count-2);
-			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
 			fprintf(f,".L%d:\n",label_count-1);
 			register_free(e->left->reg);
 			e->reg = e->right->reg;

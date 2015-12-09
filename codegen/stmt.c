@@ -224,6 +224,7 @@ void stmt_typecheck( struct stmt *s, struct decl *d )
 
 void stmt_codegen (struct stmt *s, FILE* f) 
 {
+	int label_save1, label_save2;
 	if(!s) return;
 	struct expr *e;
 	switch(s->kind){
@@ -241,28 +242,36 @@ void stmt_codegen (struct stmt *s, FILE* f)
 			fprintf(f,"\n\t#### if statement ####\n");
 			expr_codegen(s->expr,f);
 			fprintf(f,"\tCMP $0, %s\n",register_name(s->expr->reg));
+			register_free(s->expr->reg);
 			fprintf(f,"\tJE .L%d\n",label_count);
+			label_save1 = label_count;
 			label_count++;
 			stmt_codegen(s->body,f);
 			fprintf(f,"\tJMP .L%d\n",label_count);
+			label_save2 = label_count;
 			label_count++;
-			fprintf(f,".L%d:\n",label_count-2);
+			fprintf(f,".L%d:\n",label_save1);
 			stmt_codegen(s->else_body,f);
-			fprintf(f,".L%d:\n",label_count-1);
+			fprintf(f,".L%d:\n",label_save2);
 			break;
 		case STMT_FOR:
 			fprintf(f,"\n\t#### for loop ####\n");
 			expr_codegen(s->init_expr,f);
+			register_free(s->init_expr->reg);
 			fprintf(f,".L%d:\n",label_count);
+			label_save1 = label_count;
 			label_count++;
 			expr_codegen(s->expr,f);
+			register_free(s->expr->reg);
 			fprintf(f,"\tCMP $0, %s\n",register_name(s->expr->reg));
 			fprintf(f,"\tJE .L%d\n",label_count);
+			label_save2 = label_count;
 			label_count++;	
 			stmt_codegen(s->body,f);
 			expr_codegen(s->next_expr,f);
-			fprintf(f,"\tJMP .L%d\n",label_count-2);
-			fprintf(f,".L%d:\n",label_count-1);
+			register_free(s->next_expr->reg);
+			fprintf(f,"\tJMP .L%d\n",label_save1);
+			fprintf(f,".L%d:\n",label_save2);
 			break;
 		case STMT_PRINT:
 			if(s->expr){
