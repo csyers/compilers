@@ -1,0 +1,6 @@
+a: integer = 5+5;
+
+f: function void () = {
+	5+'a';
+	return;
+}

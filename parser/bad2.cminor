@@ -1,0 +1,5 @@
+// cannot pass values of an array into function call
+
+main: function void() = {
+  f(x,y,{1,2,3});
+}

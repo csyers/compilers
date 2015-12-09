@@ -1,0 +1,11 @@
+// This example shows how to handle strings
+!
+
+! id !
+
+"This is a normal string"
+"This is a string with an escaped \""
+"This string has multiple \" \" \" \""
+"Notre\nDame"
+"This string has\n many\n  new\n   lines!"
+"This string has a null character before the end, so the word banana will not be printed a second time \0 banana"

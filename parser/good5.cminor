@@ -1,0 +1,37 @@
+// simple statement testing
+
+main: function void() = {
+	if(true)
+		print "no else, one statement";
+	
+	if(true)
+		print "else, one statement";
+	else
+		print "else \'for else, one statement\'";
+	if(false){
+		print "no else, statement block";
+		print "second statement";
+	}
+
+	if(true){
+		print "else, statement block";
+	} else
+		print "else for \'else, statement block\'";
+	if(false)
+		print "else, one statement";
+	 else {
+		print "else for \'single statment if with a block else\'";
+	}
+	if(true){
+		print "full if/else block";
+	} else {
+		print "full if/else block";
+	}
+
+	for(;;)
+		print "single statement for";
+	
+	for(i=5;i<10;i++){
+		print "block for";
+	}
+}

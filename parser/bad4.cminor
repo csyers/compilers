@@ -1,0 +1,6 @@
+// try to declare a function without an equal sign - a common typo for me
+
+main: function integer (argc: integer, argv: char) {
+	print "this shouldn't work!";
+	return 0;
+}

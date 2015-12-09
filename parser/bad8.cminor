@@ -1,0 +1,8 @@
+// can't do two increments
+
+main: function void() = {
+	i: integer = 5;
+	a: array [5] integer = {1,2,3,4,5};
+	f: char = 'l';
+	x = x++++;		// according to neil, cannot do two increments
+}

@@ -1,0 +1,4 @@
+// Test to see if scanning still errors out properly when parsing
+// Invalid character .
+
+.

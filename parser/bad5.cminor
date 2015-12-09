@@ -1,0 +1,7 @@
+// error because you cannot have a declaration in a for loop!
+
+main: function void()={
+	for(i: integer = 0; i < 10 ; i++){
+		print "oh no!";
+	}
+}

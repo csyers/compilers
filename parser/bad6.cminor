@@ -1,0 +1,15 @@
+// error: unmatched }
+
+main: function void()={
+	{
+	}
+	{	
+		{
+			{
+				{ // this one's match is commented out!
+
+			//	}
+			}
+		}
+	}
+}

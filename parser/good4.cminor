@@ -1,0 +1,11 @@
+// expression testing, more complex. Includes multiple levels of expression evaluation
+
+main: function void() = {
+	x = 5+5-54+120-x;
+	y = 5+5-(54+120-x);	
+	z = x*x/56+10%6-5^10||1 || 0 && 10 || 16;
+	y = 5/f(x,y,z);
+	y = f(y--*z++);
+	y = x+-5;	// should work
+
+}

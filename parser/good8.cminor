@@ -1,0 +1,15 @@
+// function inception
+
+f: function void (f: function array [] integer (i:integer)) = {
+	return "wow this is a crazy function";
+}
+
+f: function function void() (i:integer) = {
+	return "function returns a function";
+}
+
+main: function void() = {
+	f: function integer (q: string)={
+		print "this would not be allowed in type checking";
+	}
+}

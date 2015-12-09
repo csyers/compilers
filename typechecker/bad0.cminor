@@ -1,0 +1,13 @@
+// Resolve error: multiple declarations
+
+i: integer;
+i: string;	// error 1: i is already declared
+
+f: function void ();
+f: function void () = {		// non error because previous thing was a prototype
+	i = 5;			// non error: resolves to global i
+	a: string;
+	b: array [5] integer = {1,2,3,4,5};	
+	b: string = "hello";	// error
+	return;
+}

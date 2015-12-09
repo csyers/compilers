@@ -1,0 +1,19 @@
+// global declarations
+
+i: integer;
+s: string;
+a: array [5] integer;
+c: char;
+
+i1: integer = 5;
+s1: string = "hello";
+c1: char = 'c';
+
+f: function void ();
+f: function void () = {
+	return;
+}
+
+f1: function integer () = {
+	return i;
+}

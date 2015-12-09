@@ -1,0 +1,32 @@
+// expression testing
+
+main: function void() = {
+	x = 5+5;
+	y = x-y;	
+	z = x*x;
+	y = 5/0; 		// ahh! divide by 0
+	y = z;
+	y = true;
+	x = false;
+	x = 5;
+	x = 'c';
+	x = "string";
+	x = a || b;
+	x = a && b;
+	x = a < 5;
+	x = a > 5;
+	x = a <= 5;
+	x = a >= 5;
+	x = a == 5;
+	x = a != b;
+	x = x%d;
+	x = -5;
+	x = !0;
+	x = x^5;
+	x = x++;
+	y = y--;
+	x = f(x);
+	x = a[5];
+	//x = {1,2,3};
+
+}

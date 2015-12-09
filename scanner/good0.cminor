@@ -1,0 +1,9 @@
+// Comment testing
+string
+// This should not appear
+integer
+/* My name is Chris Syers */
+char
+/* These comments can spread 
+	more than one line!! */
+boolean

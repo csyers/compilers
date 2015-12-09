@@ -1,0 +1,20 @@
+// demonstate the various declaration ability at global scope
+
+i: integer;
+c: char;
+s: string;
+b: boolean;
+f: function void();
+
+i2: integer = 5;
+c2: char = '\0';
+
+c3: char = '\n'; // should print '\n'
+c4: char = '\t'; // should just print 't'
+c5: char = 'o';	
+
+s2: string = "hel\nlo";
+b2: boolean = true; 
+f2: function void()={
+	return;
+}

@@ -1,0 +1,9 @@
+// This will fail because @ is not a valid character
+
+string
+1534
+'a'
+Notre Dame
+"Notre\nDame";
+>=
+@

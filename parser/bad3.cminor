@@ -1,0 +1,3 @@
+// Should fail - grammar does not allow for an array to be set to empty { } 
+
+a: array [5] integer = {};

@@ -1,0 +1,38 @@
+// NESTED STATEMENT CASES
+
+main: function void () = {
+
+	if(x<10){
+		if(x<5)
+			print "1";
+		else
+			print "2";
+	} else {
+		if(x>20){
+			print "12";
+			print "123";
+		} else {
+			print "123";
+			print "12";
+		}
+	}
+
+
+	for(i=0;i<10;i++){
+		if(i%2==0){
+			print "even";
+		} else {
+			print "odd";
+		}
+	}
+
+
+	if(true){
+		if(false){
+			if(true){
+				print "yeaH";
+			}
+		}
+	}
+
+}

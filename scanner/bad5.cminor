@@ -1,0 +1,3 @@
+// This case will fail because it has an unespaced quote inside of a string
+
+"Hello, my name is " Syers "

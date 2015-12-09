@@ -1,0 +1,2 @@
+// Test to see if string too long still fails scanning when running the parse.
+s: string = "hello this string is way too long. A string cannot be longer than 256 characters in c-minor.hello this string is way too long. A string cannot be longer than 256 characters in c-minor.hello this string is way too long. A string cannot be longer than 256 characters in c-minor. Hopefully this is long enough."

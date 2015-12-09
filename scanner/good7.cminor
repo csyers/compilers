@@ -1,0 +1,7 @@
+// A function prototype may be given and linked in another library
+
+puts: function void ( s: string );
+
+main: function integer () = {
+	puts("hello world");
+}

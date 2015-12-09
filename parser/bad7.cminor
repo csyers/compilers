@@ -1,0 +1,5 @@
+// error: unmatched paren in expression
+
+main: function void() = {
+	i: integer = ((1+2)/3 * 10*5));
+}

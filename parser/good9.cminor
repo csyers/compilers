@@ -1,0 +1,27 @@
+// random program
+
+x: string = "hello";
+x: array [5] integer = {1};
+x: integer;
+a: array [5] integer;
+
+f: function void(x: integer, s: string);
+
+main: function void (x: integer) = {
+	functin();
+	i = 1+2+3+4;
+	x: integer = 5;	
+	if(true){
+		print "hello";
+	}else{
+		{
+			y: integer = 5;
+		}
+	}
+
+	for(i = 5; i < 10; i++){
+		print "hello";
+	}
+	if(false) return;
+}
+a: array [5] integer;

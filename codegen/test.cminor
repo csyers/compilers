@@ -1,0 +1,4 @@
+main: function integer () = {
+	print "hello","\n",5,"\n",true,'\n',5^3,'\n';
+	print;
+}

@@ -1,0 +1,11 @@
+// This program should fail because it has an invalid character, the .
+
+class hello{
+  public:
+	nothing;
+  private:
+	int data;
+}
+
+hello a;
+cout << a.data << endl;
