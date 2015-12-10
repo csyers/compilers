@@ -52,6 +52,6 @@ enum token{
 };
 typedef enum token token_t;
 const char* token_string(token_t t);
-
+void edit_string(char* word);
 
 #endif

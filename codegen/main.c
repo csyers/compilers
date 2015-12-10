@@ -175,6 +175,7 @@ void codegen(char *file, char *outfile){
         	printf("Could not open file '%s'\n",file);
 	 	exit(1);						// exit 1 if file is not readable
         }
+	
 	if(yyparse()==0){						// parse the file
 		decl_resolve(program);					// resolve recursively starting with the first decl
 		if(error_count!=0){					

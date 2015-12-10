@@ -994,7 +994,6 @@ void expr_codegen( struct expr *e, FILE* f)
 			 fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->right->reg), arg_reg[argument_count]);
 			 argument_count++;
 			 register_free(e_cursor->right->reg);
-			 // e->reg=--sadf
 			 break;
 		case EXPR_FUNC:		// function calls
 			argument_count = 0;

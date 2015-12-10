@@ -187,9 +187,6 @@ expr_group		: ident TOKEN_L_PAREN expr_list TOKEN_R_PAREN {$$ = expr_create(EXPR
 			| TOKEN_L_PAREN expr TOKEN_R_PAREN {$$ = expr_create(EXPR_GROUP,$2,0);}	// ()
 			| expr_primary {$$ = $1;}
 			;
-//expr_array_list		: TOKEN_R_BRACKET expr TOKEN_L_BRACKET expr_array_list {$$ = expr_create(EXPR_ARRAY_LIST,$2,$4);}
-//			| {$$ = 0;}
-//			;
 expr_primary		: ident {$$ = expr_create_name($1);}
 			| TOKEN_INTEGER_LITERAL {$$ = expr_create_integer_literal(atoi(yytext));}
 			| TOKEN_STRING_LITERAL {char *buf; buf = strdup(yytext); $$ = expr_create_string_literal(buf);}
