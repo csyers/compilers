@@ -904,34 +904,80 @@ void expr_codegen( struct expr *e, FILE* f)
 			e->reg = e->right->reg;
 			break;
 		case EXPR_EQ:
-			expr_codegen(e->left,f);
-			expr_codegen(e->right,f);
-			fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			fprintf(f,"\tJE .L%d\n",label_count);
-			label_count++;
-			fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
-			fprintf(f,"\tJMP .L%d\n",label_count);
-			label_count++;
-			fprintf(f,".L%d:\n",label_count-2);
-			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
-			fprintf(f,".L%d:\n",label_count-1);
-			register_free(e->left->reg);
-			e->reg = e->right->reg;
+			if(e->left->kind == EXPR_STR && e->right->kind == EXPR_STR){
+				expr_codegen(e->left,f);
+				expr_codegen(e->right,f);
+				fprintf(f,"\tPUSHQ %%r10\n");
+				fprintf(f,"\tPUSHQ %%r11\n");
+				fprintf(f,"\tMOV %s, %%rdi\n",register_name(e->left->reg));
+				fprintf(f,"\tMOV %s, %%rsi\n",register_name(e->right->reg));
+				fprintf(f,"\tCALL strcmp\n");
+				fprintf(f,"\tPOPQ %%r11\n");
+				fprintf(f,"\tPOPQ %%r10\n");
+				fprintf(f,"\tCMP $0, %%rax\n");
+				fprintf(f,"\tJE .L%d\n",label_count);
+				label_count++;
+				fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
+				fprintf(f,"\tJMP .L%d\n",label_count);
+				label_count++;
+				fprintf(f,".L%d:\n",label_count-2);
+				fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
+				fprintf(f,".L%d:\n",label_count-1);
+				e->reg = e->right->reg;
+				register_free(e->left->reg);
+			} else {
+				expr_codegen(e->left,f);
+				expr_codegen(e->right,f);
+				fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
+				fprintf(f,"\tJE .L%d\n",label_count);
+				label_count++;
+				fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
+				fprintf(f,"\tJMP .L%d\n",label_count);
+				label_count++;
+				fprintf(f,".L%d:\n",label_count-2);
+				fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
+				fprintf(f,".L%d:\n",label_count-1);
+				register_free(e->left->reg);
+				e->reg = e->right->reg;
+			}
 			break;
 		case EXPR_NE:
-			expr_codegen(e->left,f);
-			expr_codegen(e->right,f);
-			fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			fprintf(f,"\tJNE .L%d\n",label_count);
-			label_count++;
-			fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
-			fprintf(f,"\tJMP .L%d\n",label_count);
-			label_count++;
-			fprintf(f,".L%d:\n",label_count-2);
-			fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
-			fprintf(f,".L%d:\n",label_count-1);
-			register_free(e->left->reg);
-			e->reg = e->right->reg;
+			if(e->left->kind == EXPR_STR && e->right->kind == EXPR_STR){
+				expr_codegen(e->left,f);
+				expr_codegen(e->right,f);
+				fprintf(f,"\tPUSHQ %%r10\n");
+				fprintf(f,"\tPUSHQ %%r11\n");
+				fprintf(f,"\tMOV %s, %%rdi\n",register_name(e->left->reg));
+				fprintf(f,"\tMOV %s, %%rsi\n",register_name(e->right->reg));
+				fprintf(f,"\tCALL strcmp\n");
+				fprintf(f,"\tPOPQ %%r11\n");
+				fprintf(f,"\tPOPQ %%r10\n");
+				fprintf(f,"\tCMP $0, %%rax\n");
+				fprintf(f,"\tJNE .L%d\n",label_count);
+				label_count++;
+				fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
+				fprintf(f,"\tJMP .L%d\n",label_count);
+				label_count++;
+				fprintf(f,".L%d:\n",label_count-2);
+				fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
+				fprintf(f,".L%d:\n",label_count-1);
+				e->reg = e->right->reg;
+				register_free(e->left->reg);
+			} else {
+				expr_codegen(e->left,f);
+				expr_codegen(e->right,f);
+				fprintf(f,"\tCMP %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
+				fprintf(f,"\tJNE .L%d\n",label_count);
+				label_count++;
+				fprintf(f,"\tMOV $0, %s\n",register_name(e->right->reg));
+				fprintf(f,"\tJMP .L%d\n",label_count);
+				label_count++;
+				fprintf(f,".L%d:\n",label_count-2);
+				fprintf(f,"\tMOV $1, %s\n",register_name(e->right->reg));
+				fprintf(f,".L%d:\n",label_count-1);
+				register_free(e->left->reg);
+				e->reg = e->right->reg;				
+			}
 			break;
 		case EXPR_MOD:
 			expr_codegen(e->left,f);
