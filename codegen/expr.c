@@ -763,8 +763,12 @@ int expr_is_constant( struct expr *e )
 
 void expr_codegen( struct expr *e, FILE* f)
 {
+
 	if(!e) return;
+	int i;
 	char reg_name[200];
+	char arg_reg[6][100] = {"%rdi","%rsi","%rdx","%rcx","%r8","r%9"};
+	struct expr *e_cursor;
 	switch(e->kind){
 		case EXPR_ADD:
 			expr_codegen(e->left,f);
@@ -776,9 +780,9 @@ void expr_codegen( struct expr *e, FILE* f)
 		case EXPR_SUB:
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tSUB %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
-			e->reg = e->right->reg;
-			register_free(e->left->reg);
+			fprintf(f,"\tSUB %s, %s\n",register_name(e->right->reg),register_name(e->left->reg));
+			e->reg = e->left->reg;
+			register_free(e->right->reg);
 			break;
 		case EXPR_MUL:
 			expr_codegen(e->left,f);
@@ -800,7 +804,6 @@ void expr_codegen( struct expr *e, FILE* f)
 			register_free(e->left->reg);
 			break;
 		case EXPR_NAME:
-			printf("doing EXPR_NAME\n");
 			e->reg = register_alloc();
 			symbol_code(e->symbol,reg_name);
 			fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));
@@ -949,8 +952,6 @@ void expr_codegen( struct expr *e, FILE* f)
 		case EXPR_EXP:
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tPUSHQ %%rdi\n");
-			fprintf(f,"\tPUSHQ %%rsi\n");
 			fprintf(f,"\tPUSHQ %%r10\n");
 			fprintf(f,"\tPUSHQ %%r11\n");
 			fprintf(f,"\tMOV %s, %%rdi\n",register_name(e->left->reg));
@@ -958,8 +959,6 @@ void expr_codegen( struct expr *e, FILE* f)
 			fprintf(f,"\tCALL integer_power\n");
 			fprintf(f,"\tPOPQ %%r11\n");
 			fprintf(f,"\tPOPQ %%r10\n");
-			fprintf(f,"\tPOPQ %%rsi\n");
-			fprintf(f,"\tPOPQ %%rdi\n");
 			fprintf(f,"\tMOV %%rax, %s\n",register_name(e->right->reg));
 			e->reg = e->right->reg;
 			register_free(e->left->reg);
@@ -979,10 +978,45 @@ void expr_codegen( struct expr *e, FILE* f)
 			e->reg = e->left->reg;
 			break;
 		case EXPR_LIST:		// function calls, prints
-
-			break;
+			 e_cursor = e;
+			 while(e_cursor->right->kind == EXPR_LIST){
+			 	expr_codegen(e_cursor->left,f);
+			 	fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->left->reg), arg_reg[argument_count]);
+			 	argument_count++;
+			 	register_free(e_cursor->left->reg);
+			 	e_cursor = e_cursor->right;
+			 } 
+			 expr_codegen(e_cursor->left,f);
+			 fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->left->reg), arg_reg[argument_count]);
+			 argument_count++;
+			 register_free(e_cursor->left->reg);
+			 expr_codegen(e_cursor->right,f);
+			 fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->right->reg), arg_reg[argument_count]);
+			 argument_count++;
+			 register_free(e_cursor->right->reg);
+			 // e->reg=--sadf
+			 break;
 		case EXPR_FUNC:		// function calls
+			argument_count = 0;
+			e->reg = register_alloc();
+			fprintf(f,"\tPUSHQ %%r10\n");
+			fprintf(f,"\tPUSHQ %%r11\n");
+			if(e->right && e->right->kind != EXPR_LIST){
+				expr_codegen(e->right,f);
+				fprintf(f, "\tMOV %s, %%rdi\n", register_name(e->right->reg));
+				register_free(e->right->reg);
+				argument_count++;
+			} else {
+				expr_codegen(e->right,f);				
+			}
 
+			fprintf(f,"\tCALL %s\n",e->left->name);
+			//for(i = argument_count-1; i >= 0; i--){
+			//	fprintf(f,"\tPOPQ %s\n",arg_reg[i]);
+			//}
+			fprintf(f,"\tPOPQ %%r11\n");
+			fprintf(f,"\tPOPQ %%r10\n");
+			fprintf(f, "\tMOV %%rax, %s\n", register_name(e->reg));
 			break;
 		case EXPR_ARRAY:
 			// do nothing (supposed to be arrays)
@@ -1040,14 +1074,12 @@ void expr_print_codegen(struct expr *e, FILE *f)
 		printf("\n");
 		exit(1);
 	}
-	fprintf(f,"\tPUSHQ %%rdi\n");
 	fprintf(f,"\tPUSHQ %%r10\n");
 	fprintf(f,"\tPUSHQ %%r11\n");
 	fprintf(f,"\tMOV %s, %%rdi\n",register_name(e->reg));
 	fprintf(f,"\tCALL print_%s\n",name);
 	fprintf(f,"\tPOPQ %%r11\n");
 	fprintf(f,"\tPOPQ %%r10\n");
-	fprintf(f,"\tPOPQ %%rdi\n");
 	register_free(e->reg);
 	
 }

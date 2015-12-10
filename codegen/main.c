@@ -35,6 +35,7 @@ int reg[16] = {1,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0};
 int label_count = 0;
 int string_count = 0;
 int return_count = 0;
+int argument_count = 0;
 
 int main(int argc, char* argv[]){
 	int opt, long_index;

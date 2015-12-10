@@ -290,11 +290,15 @@ void stmt_codegen (struct stmt *s, FILE* f)
 			}
 			break;
 		case STMT_RETURN:
-			expr_codegen(s->expr,f);
-			fprintf(f,"\tMOV %s, %%rax\n",register_name(s->expr->reg));
-			fprintf(f,"\tJMP .RET%d\n",return_count);
-			register_free(s->expr->reg);
-			break;
+			if(s->expr){
+				expr_codegen(s->expr,f);
+				fprintf(f,"\tMOV %s, %%rax\n",register_name(s->expr->reg));
+				fprintf(f,"\tJMP .RET%d\n",return_count);
+				register_free(s->expr->reg);
+				break;
+			} else {
+				fprintf(f,"\tJMP .RET%d\n",return_count);	
+			}
 	}
 	stmt_codegen(s->next,f);
 }

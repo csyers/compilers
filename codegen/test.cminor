@@ -1,7 +1,12 @@
-i: integer = 0;
-x: integer = 5;
+f1: function integer (x:integer) = {
+  print x,"\n";
+  return x;
+}
+f2: function integer (x:integer) = {
+  print x,"\n";
+  return x;
+}
+main: function integer ();
 main: function integer () = {
-	print 10>=10,"\n";
-	print 9>=10,"\n";
-	print 10>=9,"\n";
+	print 5-2;
 }

@@ -160,6 +160,7 @@ void decl_typecheck( struct decl *d )
 void decl_codegen(struct decl *d, FILE* f)
 {
 	char reg[200];
+	struct expr *e;
 	if(!d) return;
 	
 	if(d->symbol->kind == SYMBOL_GLOBAL){
@@ -246,16 +247,38 @@ void decl_codegen(struct decl *d, FILE* f)
 			case TYPE_CHARACTER:
 			case TYPE_INTEGER:
 				if(d->value){
-					// do nothing
+					expr_codegen(d->value,f);
+					symbol_code(d->symbol,reg);
+					fprintf(f,"\tMOV %s, %s\n",register_name(d->value->reg),reg);
+					register_free(d->value->reg);
 				} else {
-					// TO DO HERE
+					symbol_code(d->symbol,reg);
+					e = expr_create_integer_literal(0);
+					e->reg = register_alloc();
+					fprintf(f,"\tMOV $0, %s\n", register_name(e->reg));
+					fprintf(f,"\tMOV %s, %s\n",register_name(e->reg),reg);
+					register_free(e->reg);
 				}
 				break;
 			case TYPE_STRING:
 				if(d->value){
-					// do nothing?
+					expr_codegen(d->value,f);		// address of the string is in d->value->reg
+					symbol_code(d->symbol,reg);
+					fprintf(f,"\tMOV %s, %s\n",register_name(d->value->reg),reg);
+					register_free(d->value->reg);
 				} else {
-					// TO DO HERE
+					e = expr_create_string_literal("");
+					e->reg = register_alloc();
+					fprintf(f,".data\n");
+					fprintf(f,".STR%d: ",string_count);
+					string_count++;
+					fprintf(f,".string \"\"");
+					fprintf(f,"\n");
+					fprintf(f,".text\n");
+					fprintf(f,"\tLEA .STR%d, %s\n",string_count-1,register_name(e->reg));
+					symbol_code(d->symbol,reg);
+					fprintf(f,"\tMOV %s, %s\n",register_name(e->reg),reg);
+					register_free(e->reg);
 				}
 				break;
 			case TYPE_FUNCTION:
