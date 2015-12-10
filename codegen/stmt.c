@@ -257,19 +257,25 @@ void stmt_codegen (struct stmt *s, FILE* f)
 		case STMT_FOR:
 			fprintf(f,"\n\t#### for loop ####\n");
 			expr_codegen(s->init_expr,f);
-			register_free(s->init_expr->reg);
+			if(s->init_expr){
+				register_free(s->init_expr->reg);
+			}
 			fprintf(f,".L%d:\n",label_count);
 			label_save1 = label_count;
 			label_count++;
 			expr_codegen(s->expr,f);
-			register_free(s->expr->reg);
-			fprintf(f,"\tCMP $0, %s\n",register_name(s->expr->reg));
-			fprintf(f,"\tJE .L%d\n",label_count);
+			if(s->expr){
+				register_free(s->expr->reg);
+				fprintf(f,"\tCMP $0, %s\n",register_name(s->expr->reg));
+				fprintf(f,"\tJE .L%d\n",label_count);
+			}
 			label_save2 = label_count;
 			label_count++;	
 			stmt_codegen(s->body,f);
 			expr_codegen(s->next_expr,f);
-			register_free(s->next_expr->reg);
+			if(s->next_expr){
+				register_free(s->next_expr->reg);
+			}
 			fprintf(f,"\tJMP .L%d\n",label_save1);
 			fprintf(f,".L%d:\n",label_save2);
 			break;
