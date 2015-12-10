@@ -1,5 +1,6 @@
 #include "register.h"
 
+// convers a register number (0-15) into a register name (%rax...%r15)
 const char * register_name(int r)
 {
 	switch(r){
@@ -51,25 +52,27 @@ const char * register_name(int r)
 		case R15:
 			return "%r15";
 			break;
-		default:
+		default:			// should never get here - only 0-15 should be passed into this function
 			return "ERROR";
 			break;
         }
 }
 
+// changes the first open 0 register (not in use) to 1 (in use) and returns that value
 int register_alloc()
 {
   int i = 0;
-  for(i = 0; i < 16; i++){
-    if(reg[i] == 0){
-      reg[i] = 1;
+  for(i = 0; i < 16; i++){		// loop through reg array
+    if(reg[i] == 0){		// if the element is 0
+      reg[i] = 1;			// set it to 1 and return it
       return i;
     }
   }
-  printf("error: out of registers\n");
+  printf("error: out of registers\n");		// if there are no more registers, exit (should not happen)
   exit(1);
 }
 
+// frees a register that is in use by setting it to 0 in the reg array
 void register_free(int r){
   if(r >= 0 && r <= 15){
     reg[r] = 0;

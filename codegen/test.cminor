@@ -1,12 +1,3 @@
-f1: function integer (x:integer) = {
-  print x,"\n";
-  return x;
-}
-f2: function integer (x:integer) = {
-  print x,"\n";
-  return x;
-}
-main: function integer ();
 main: function integer () = {
-	print 5-2;
+	print "h\te\tl\tl\to", '\t', "world",'\n';
 }

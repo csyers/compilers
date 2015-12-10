@@ -29,13 +29,14 @@ extern struct decl* program;
 //extern int error_count;
 //extern struct hash_table *h;
 
+// GLOBAL VARIABLE INITILIZATIONS
 int error_count;
 struct hash_table *h;
-int reg[16] = {1,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0};
-int label_count = 0;
-int string_count = 0;
-int return_count = 0;
-int argument_count = 0;
+int reg[16] = {1,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0};	// for allocing and freeing registers (most are always in use)
+int label_count = 0;					// for keeping track of labels
+int string_count = 0;					// labels for strings
+int return_count = 0;					// return labels
+int argument_count = 0;					// number of arguments to a function
 
 int main(int argc, char* argv[]){
 	int opt, long_index;
@@ -62,8 +63,8 @@ int main(int argc, char* argv[]){
 				typecheck(optarg);		// parse, resolve, and typecheck to display the total errors
 				break;	
 			case 'c':
-				if(argv[3]==NULL){
-					print_usage_and_exit();
+				if(argv[3]==NULL){			// if no output file was given
+					print_usage_and_exit();		// exit
 				}
 				codegen(optarg,argv[3]);	// if the option was -codegen, generate the code
 				break;
@@ -167,37 +168,40 @@ void typecheck(char *file){
 	return;
 }
 
+// run through the whole codegen process
 void codegen(char *file, char *outfile){
 	int i;
 	h = hash_table_create(0,0);		// intial hash table is empty
-	yyin = fopen(file,"r");	
+	yyin = fopen(file,"r");			// open file for scanning
 	if(!yyin){
         	printf("Could not open file '%s'\n",file);
 	 	exit(1);						// exit 1 if file is not readable
         }
-	
+	printf("############### Scanning and Parsing %s ###############\n\n",file);
 	if(yyparse()==0){						// parse the file
+		decl_print(program,0);
+		printf("\n############### Resolving %s ###############\n\n",file);
 		decl_resolve(program);					// resolve recursively starting with the first decl
 		if(error_count!=0){					
 			printf("resolve error count: %d\n",error_count);// print the resolve error counts
 			exit(1);					// exit with status 1 if there were resolve errors
 		}
+		printf("\n############### Typechecking %s ###############\n\n",file);
 		decl_typecheck(program);				// recursively typecheck the program
 		if(error_count!=0){					
 			printf("typecheck error count: %d\n",error_count);	// print the total number of typecheck errors
 			exit(1);					// exit 1 if there were typecheck errors
+		} else {
+			printf("no typecheck errors\n\n");
 		}
-		FILE* f = fopen(outfile,"w");
+		FILE* f = fopen(outfile,"w");				// open output file for writing
 		if(f==NULL){
-			printf("error: cannot open file (%s) for writing\n",outfile);
+			printf("error: cannot open file (%s) for writing\n",outfile);	// error if you cannot open the file
 			exit(1);
 		}
-		decl_codegen(program,f);
-		
-		for(i = 0; i < 16; i++){
-			printf("reg[%d]\t%d",i,reg[i]);
-			printf("\n");
-		}
+		printf("############### Generating code for %s ###############\n\n",file);
+		decl_codegen(program,f);				// recursively codegen based on the first decl
+		printf("assembly code can be found in %s\n\n",outfile);
 	} else {
 		exit(1);						// exit 1 if there were parse errors
 	}

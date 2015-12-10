@@ -165,6 +165,8 @@ void edit_string(char* word){
 				if(word[0] == '\0'){
 					return;
 				}
+			} else if(word[i+1]=='t') {
+				word[i] = '\t';
 			} else{
 				word[i] = word[i+1];
 			}

@@ -147,6 +147,8 @@ void expr_print(struct expr *e)
 				printf("\'\\0\'");
 			} else if(e->literal_value==0x0A){
 				printf("\'\\n\'");	
+			} else if(e->literal_value==0x09){
+				printf("\'\\t\'");
 			} else {
 				printf("\'%c\'",e->literal_value);	
 			}
@@ -158,6 +160,8 @@ void expr_print(struct expr *e)
 					printf("\\0");
 				} else if(e->string_literal[i]==0x0A){
 					printf("\\n");
+				} else if(e->string_literal[i]==0x09){
+					printf("\\t");
 				} else {
 					printf("%c",e->string_literal[i]);
 				}
@@ -996,70 +1000,71 @@ void expr_codegen( struct expr *e, FILE* f)
 			 register_free(e_cursor->right->reg);
 			 break;
 		case EXPR_FUNC:		// function calls
-			argument_count = 0;
-			e->reg = register_alloc();
+			argument_count = 0;				// set global variable to start at 0
+			e->reg = register_alloc();			
+			// push caller saved registers
 			fprintf(f,"\tPUSHQ %%r10\n");
 			fprintf(f,"\tPUSHQ %%r11\n");
-			if(e->right && e->right->kind != EXPR_LIST){
+			if(e->right && e->right->kind != EXPR_LIST){	// only 1 argument
 				expr_codegen(e->right,f);
 				fprintf(f, "\tMOV %s, %%rdi\n", register_name(e->right->reg));
 				register_free(e->right->reg);
 				argument_count++;
-			} else {
+			} else {					// more than 1 argument
 				expr_codegen(e->right,f);				
 			}
-
+			// calls the function and then pops the caller saved
 			fprintf(f,"\tCALL %s\n",e->left->name);
-			//for(i = argument_count-1; i >= 0; i--){
-			//	fprintf(f,"\tPOPQ %s\n",arg_reg[i]);
-			//}
 			fprintf(f,"\tPOPQ %%r11\n");
 			fprintf(f,"\tPOPQ %%r10\n");
-			fprintf(f, "\tMOV %%rax, %s\n", register_name(e->reg));
+			fprintf(f, "\tMOV %%rax, %s\n", register_name(e->reg));		// moves the return value into r->reg
 			break;
 		case EXPR_ARRAY:
 			// do nothing (supposed to be arrays)
 			break;
-		case EXPR_ASSIGN:
-			expr_codegen(e->right,f);
-			symbol_code(e->left->symbol,reg_name);
-			fprintf(f,"\tMOV %s, %s\n",register_name(e->right->reg),reg_name);
-			e->reg = e->right->reg;
+		case EXPR_ASSIGN:		
+			expr_codegen(e->right,f);		// codegen the right
+			symbol_code(e->left->symbol,reg_name);	// get name of the left identifier
+			fprintf(f,"\tMOV %s, %s\n",register_name(e->right->reg),reg_name);	// move the value of the right into the symbol
+			e->reg = e->right->reg;			// set this expr's register to the right hand side (allows for x=y=10)
 			break;
 		case EXPR_BLOCK:
-			// ???????????????????????????????????
 			// do nothing (supposed to be arrays)
 			break;
-		case EXPR_GROUP:
-			expr_codegen(e->left,f);
-			e->reg = e->left->reg;
+		case EXPR_GROUP:			// expression in () are stored on the left
+			expr_codegen(e->left,f);	// codegen the left
+			e->reg = e->left->reg;	
 			break;
 	}
 }
 
+// function that prints out a string to the output file f
 void expr_get_string(struct expr *e, FILE* f)
 {
 	int i = 0;
-	fprintf(f,"\"");
-	for(i = 0; i < strlen(e->string_literal); i++){
-		if(e->string_literal[i]==0){
+	fprintf(f,"\"");		// prints the "
+	for(i = 0; i < strlen(e->string_literal); i++){		// for every character in the string_literal
+		if(e->string_literal[i]==0){			// print out \0 if the char is null"
 			fprintf(f,"\\0");
-		} else if(e->string_literal[i]==0x0A){
+		} else if(e->string_literal[i]==0x0A){		// print out \n if the char is \n"
 			fprintf(f,"\\n");
-		} else {
+		} else if(e->string_literal[i]==0x09){
+			fprintf(f,"\\t");
+		} else {					// prints out the character if it is anything else
 			fprintf(f,"%c",e->string_literal[i]);
 		}
 	}
-	fprintf(f,"\"");
+	fprintf(f,"\"");		// prints the ending "
 }
 
+// function that generates code for an expression to be printed, and writes the call to the linked print_x function
 void expr_print_codegen(struct expr *e, FILE *f)
 {
-	struct type *t;
-	expr_codegen(e,f);
-	t = expr_typecheck(e);
+	struct type *t;		
+	expr_codegen(e,f);			// generates the code for e: e->reg now contains the result of the expr
+	t = expr_typecheck(e);			// get the type of e (to call the right function
 	char name[200];
-	if(t->kind == TYPE_INTEGER){
+	if(t->kind == TYPE_INTEGER){		// switch on the kind -- set a name char * to the type the expr is
 		sprintf(name,"integer");
 	} else if(t->kind == TYPE_BOOLEAN){
 		sprintf(name,"boolean");
@@ -1067,18 +1072,20 @@ void expr_print_codegen(struct expr *e, FILE *f)
 		sprintf(name,"character");
 	} else if(t->kind == TYPE_STRING) {
 		sprintf(name,"string");
-	} else {
+	} else {				// should never occur - exprs other than string, char, bool, and int should not pass typecheck
 		printf("error: cannot print expression ");
 		expr_print(e);
 		printf("\n");
 		exit(1);
 	}
+	// code for calling print_x on the expr result - puts the value into %rdi (first argument register)
 	fprintf(f,"\tPUSHQ %%r10\n");
 	fprintf(f,"\tPUSHQ %%r11\n");
 	fprintf(f,"\tMOV %s, %%rdi\n",register_name(e->reg));
 	fprintf(f,"\tCALL print_%s\n",name);
 	fprintf(f,"\tPOPQ %%r11\n");
 	fprintf(f,"\tPOPQ %%r10\n");
+	// free register in use when done
 	register_free(e->reg);
 	
 }
