@@ -770,47 +770,47 @@ void expr_codegen( struct expr *e, FILE* f)
 
 	if(!e) return;
 	int i;
-	char reg_name[200];
-	char arg_reg[6][100] = {"%rdi","%rsi","%rdx","%rcx","%r8","r%9"};
-	struct expr *e_cursor;
+	char reg_name[200];			// buffer to register names
+	char arg_reg[6][100] = {"%rdi","%rsi","%rdx","%rcx","%r8","%r9"};	// 2d array to get the names of the argument registers
+	struct expr *e_cursor;							
 	switch(e->kind){
-		case EXPR_ADD:
+		case EXPR_ADD:		// case +
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tADD %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));
+			fprintf(f,"\tADD %s, %s\n",register_name(e->left->reg),register_name(e->right->reg));	// ADD instruction on e->right and e->left, result is in e->right reg
 			e->reg = e->right->reg;
 			register_free(e->left->reg);
 			break;
-		case EXPR_SUB:
+		case EXPR_SUB:		// case -
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tSUB %s, %s\n",register_name(e->right->reg),register_name(e->left->reg));
+			fprintf(f,"\tSUB %s, %s\n",register_name(e->right->reg),register_name(e->left->reg));	// SUB instruction on e->right reg and e->left reg: result is in e->left reg
 			e->reg = e->left->reg;
 			register_free(e->right->reg);
 			break;
-		case EXPR_MUL:
+		case EXPR_MUL:		// case *
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tMOV %s, %%rax\n",register_name(e->left->reg));
-			fprintf(f,"\tIMUL %s\n",register_name(e->right->reg));
-			fprintf(f,"\tMOV %%rax, %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV %s, %%rax\n",register_name(e->left->reg));	// move one of the operands into rax
+			fprintf(f,"\tIMUL %s\n",register_name(e->right->reg));		// multiply by the other argument
+			fprintf(f,"\tMOV %%rax, %s\n",register_name(e->right->reg));	// mov the result into e->right->reg
 			e->reg = e->right->reg;
 			register_free(e->left->reg);
 			break;
-		case EXPR_DIV:
+		case EXPR_DIV:		// case divide
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tMOV %s, %%rax\n",register_name(e->left->reg));
-			fprintf(f,"\tCQTO\n");
-			fprintf(f,"\tIDIV %s\n",register_name(e->right->reg));
-			fprintf(f,"\tMOV %%rax, %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV %s, %%rax\n",register_name(e->left->reg));	// move dividend into rax
+			fprintf(f,"\tCQTO\n");						// sign extend to 128 bits
+			fprintf(f,"\tIDIV %s\n",register_name(e->right->reg));		// divide: result is in rax
+			fprintf(f,"\tMOV %%rax, %s\n",register_name(e->right->reg));	// move result into e->right->reg
 			e->reg = e->right->reg;
 			register_free(e->left->reg);
 			break;
-		case EXPR_NAME:
-			e->reg = register_alloc();
-			symbol_code(e->symbol,reg_name);
-			fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));
+		case EXPR_NAME:		// case identifier
+			e->reg = register_alloc();					// allocate a new register for it
+			symbol_code(e->symbol,reg_name);				// gets the string of the register
+			fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
 			break;
 		case EXPR_BOOL:
 		case EXPR_INT:
@@ -979,64 +979,73 @@ void expr_codegen( struct expr *e, FILE* f)
 				e->reg = e->right->reg;				
 			}
 			break;
-		case EXPR_MOD:
+		case EXPR_MOD:		// case %
+			// generate the left and right expression to mox
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tMOV %s, %%rax\n",register_name(e->left->reg));
-			fprintf(f,"\tCQTO\n");
-			fprintf(f,"\tIDIV %s\n",register_name(e->right->reg));
+			fprintf(f,"\tMOV %s, %%rax\n",register_name(e->left->reg));	// move the dividend into rax
+			fprintf(f,"\tCQTO\n");						// sign extend the value of rax into rdx (128 bits)
+			fprintf(f,"\tIDIV %s\n",register_name(e->right->reg));		// divide - remainder is stored in rdx
 			fprintf(f,"\tMOV %%rdx, %s\n",register_name(e->right->reg));
 			e->reg = e->right->reg;
 			register_free(e->left->reg);
 			break;
 		case EXPR_NEG:
+			// CASE negative. uses NEG instruction to get the negative value of e->right->reg
 			expr_codegen(e->right,f);
 			fprintf(f,"\tNEG %s\n",register_name(e->right->reg));
 			e->reg = e->right->reg;
 			break;
-		case EXPR_NOT:
+		case EXPR_NOT:	
+			// CASE !. Only operates on boolean, which is either 0 or 1. XOR with 1 flips the LSB, resulting in logical not
 			expr_codegen(e->right,f);
 			fprintf(f,"\tXOR $1, %s\n",register_name(e->right->reg));
 			e->reg = e->right->reg;
 			break;
-		case EXPR_EXP:
+		case EXPR_EXP:			// calls integer_power and stores the return value into e->reg
 			expr_codegen(e->left,f);
 			expr_codegen(e->right,f);
-			fprintf(f,"\tPUSHQ %%r10\n");
+			// push caller saved reg
+			fprintf(f,"\tPUSHQ %%r10\n");	
 			fprintf(f,"\tPUSHQ %%r11\n");
+			// move arguments into the arugment registers
 			fprintf(f,"\tMOV %s, %%rdi\n",register_name(e->left->reg));
 			fprintf(f,"\tMOV %s, %%rsi\n",register_name(e->right->reg));
+			// call the function
 			fprintf(f,"\tCALL integer_power\n");
+			// restores the caller saved regs
 			fprintf(f,"\tPOPQ %%r11\n");
 			fprintf(f,"\tPOPQ %%r10\n");
+			// move return value into e->right->reg
 			fprintf(f,"\tMOV %%rax, %s\n",register_name(e->right->reg));
 			e->reg = e->right->reg;
 			register_free(e->left->reg);
 			break;
-		case EXPR_INCR:
+		case EXPR_INCR:			// case ++/ symbol is on the left, so codegen the left and use INC instruction on it
 			expr_codegen(e->left,f);
 			fprintf(f,"\tINC %s\n",register_name(e->left->reg));
 			symbol_code(e->left->symbol,reg_name);
 			fprintf(f,"\tMOV %s, %s\n",register_name(e->left->reg),reg_name);
 			e->reg = e->left->reg;
 			break;
-		case EXPR_DECR:
+		case EXPR_DECR:			// case --. symbol is on the left, so codegen the left and use DEC command on it
 			expr_codegen(e->left,f);
 			fprintf(f,"\tDEC %s\n",register_name(e->left->reg));
 			symbol_code(e->left->symbol,reg_name);
 			fprintf(f,"\tMOV %s, %s\n",register_name(e->left->reg),reg_name);
-			e->reg = e->left->reg;
+			e->reg = e->left->reg;	
 			break;
-		case EXPR_LIST:		// function calls, prints
-			 e_cursor = e;
-			 while(e_cursor->right->kind == EXPR_LIST){
-			 	expr_codegen(e_cursor->left,f);
-			 	fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->left->reg), arg_reg[argument_count]);
-			 	argument_count++;
+		case EXPR_LIST:		// function calls with more than 1 argument
+			 e_cursor = e;		
+			 while(e_cursor->right->kind == EXPR_LIST){	// while there are more arguments to process...
+			 	expr_codegen(e_cursor->left,f);			// codegen the argument on the left
+			 	fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->left->reg), arg_reg[argument_count]);	// move that argument into the arg_reg element that is the number of argument it is
+			 	argument_count++;			
 			 	register_free(e_cursor->left->reg);
-			 	e_cursor = e_cursor->right;
+			 	e_cursor = e_cursor->right;		// advance the cursor to the right
 			 } 
-			 expr_codegen(e_cursor->left,f);
+			 // left and right are the last two arguments: expr_codegen on the left and on the right
+			 expr_codegen(e_cursor->left,f);		
 			 fprintf(f, "\tMOV %s, %s\n", register_name(e_cursor->left->reg), arg_reg[argument_count]);
 			 argument_count++;
 			 register_free(e_cursor->left->reg);
