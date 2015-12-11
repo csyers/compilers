@@ -1,0 +1,14 @@
+// test functions that return void
+
+f: function void ();
+
+main: function void () = {
+	f();
+	print "main also returns void\n";
+	return;
+}
+
+f: function void () = {
+	print "this function is void\n";
+	return;
+}

@@ -1,0 +1,15 @@
+// program that calculates a football score for Notre Dame
+
+calculate_score: function integer (td: integer, ep: integer, fg: integer, safety: integer);
+
+main: function void () = {
+	x: integer = 3;
+	y: integer = 3;
+	z: integer = 2;
+	a: integer = 1;
+	print "If Notre Dame scores ",x," touchdowns, ",y," extra points, ",z," field goals, and ",a," safties, their total score is: ",calculate_score(x,y,z,a),'\n';
+}
+
+calculate_score: function integer (td: integer, ep: integer, fg: integer, safety: integer) = {
+	return 6*td + 1*ep + 3*fg + 2*safety;
+}

@@ -1,0 +1,18 @@
+// test nested function calls!
+
+f: function integer (c: char);
+f2: function char ();
+main: function integer () = {
+	print f(f2()), '\n';
+	return f(f2());
+	
+}
+
+f: function integer (c: char) = {
+	print c, '\n';
+	return 10;
+}
+
+f2: function char () = {
+	return 'b';
+}

@@ -1,0 +1,24 @@
+// test for string comparisons
+
+global1: string = "h";
+global2: string = "h";
+main: function integer () ={
+local1: string = "hello";
+local2: string = "hello";
+print global1==local1, '\n';		// global local ==
+print local1==global1, '\n';		// local global ==
+print local1!=global1, '\n';		// local global !=
+print global1!=local1, '\n';		// global local !=
+print global1=="h", '\n';		// global literal ==
+print "h"==global1, '\n';		// literal global ==
+print local1=="h", '\n';		// local literal ==
+print "h"==local1, '\n';		// literal local ==
+print global1!="h", '\n';		// global literal !=
+print "h"!=global1, '\n';		// literal global !=
+print local1!="h", '\n';		// local literal !=
+print "h"!=local1, '\n';		// literal local !=
+print local1!=local2, '\n';		// local local !=
+print local1==local2, '\n';		// local local ==
+print global1!=global2, '\n';		// global global !=
+print global1==global2, '\n';		// global global !=
+}

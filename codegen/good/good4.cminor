@@ -1,0 +1,12 @@
+// functions that return booleanacters
+
+f: function boolean();
+
+main: function boolean () = {
+	print f(),'\n';
+	return f();
+}
+
+f: function boolean () = {
+	return true;
+}

@@ -810,7 +810,11 @@ void expr_codegen( struct expr *e, FILE* f)
 		case EXPR_NAME:		// case identifier
 			e->reg = register_alloc();					// allocate a new register for it
 			symbol_code(e->symbol,reg_name);				// gets the string of the register
-			fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
+			if(e->symbol->kind == SYMBOL_GLOBAL && e->symbol->type->kind == TYPE_STRING) {		// case where e is a global string
+				fprintf(f,"\tLEA %s, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
+			} else {
+				fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
+			}
 			break;
 		case EXPR_BOOL:
 		case EXPR_INT:
@@ -904,7 +908,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			e->reg = e->right->reg;
 			break;
 		case EXPR_EQ:
-			if(e->left->kind == EXPR_STR && e->right->kind == EXPR_STR){
+			if((e->left->kind == EXPR_STR && e->right->kind == EXPR_STR) || (e->left->kind == EXPR_NAME && e->left->symbol->type->kind == TYPE_STRING) || (e->right->kind == EXPR_NAME && e->right->symbol->type->kind == TYPE_STRING) ){
 				expr_codegen(e->left,f);
 				expr_codegen(e->right,f);
 				fprintf(f,"\tPUSHQ %%r10\n");
@@ -942,7 +946,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			}
 			break;
 		case EXPR_NE:
-			if(e->left->kind == EXPR_STR && e->right->kind == EXPR_STR){
+			if((e->left->kind == EXPR_STR && e->right->kind == EXPR_STR) || (e->left->kind == EXPR_NAME && e->left->symbol->type->kind == TYPE_STRING) || (e->right->kind == EXPR_NAME && e->right->symbol->type->kind == TYPE_STRING)){
 				expr_codegen(e->left,f);
 				expr_codegen(e->right,f);
 				fprintf(f,"\tPUSHQ %%r10\n");

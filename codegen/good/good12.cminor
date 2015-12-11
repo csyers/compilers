@@ -1,0 +1,15 @@
+// recursive function test
+
+f: function void (i:integer);
+
+main: function void () = {
+	i: integer = 10;
+	f(10);
+}
+
+f: function void (i:integer) = {
+	if(i==0)
+		return;
+	print i,'\n';
+	f(i-1);
+}

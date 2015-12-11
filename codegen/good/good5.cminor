@@ -1,0 +1,12 @@
+// functions that return stringacters
+
+f: function string();
+
+main: function string () = {
+	print f(),'\n';
+	return f();
+}
+
+f: function string () = {
+	return "hello world";
+}

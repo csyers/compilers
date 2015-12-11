@@ -1,0 +1,22 @@
+// program that decides if a number is prime
+
+is_prime: function boolean (i: integer);
+
+main: function void () = {
+	i: integer;
+	for(i = 2; i < 10000; i++){
+		if(is_prime(i))
+			print i,'\n';
+	}
+}
+
+is_prime: function boolean (i: integer) = {
+	if(i == 0 || i == 1) return false;
+	j: integer;
+	for(j=2;j<=i/2;j++){
+		if(i%j==0){
+			return false;
+		}
+	} 
+	return true;
+}

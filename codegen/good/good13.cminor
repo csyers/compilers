@@ -1,0 +1,18 @@
+// multiple levels of functions
+
+f: function integer(i:integer);
+f2: function integer(i:integer,i2:integer);
+
+main: function void() = {
+	f(10);
+}
+
+f: function integer (i:integer) = {
+	print "I'm in the first function. My arg was ",i,"\n";
+	f2(i,20);
+	print "first function again: my arg is still ",i," after calling f2\n";
+}
+
+f2: function integer (i:integer, i2:integer) = {
+	print "I'm in the second function. my args are ",i, " and ",i2,"\n";
+}

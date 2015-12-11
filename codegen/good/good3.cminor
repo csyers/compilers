@@ -1,0 +1,12 @@
+// functions that return characters
+
+f: function char();
+
+main: function char () = {
+	print f(),'\n';
+	return f();
+}
+
+f: function char () = {
+	return 'd';
+}

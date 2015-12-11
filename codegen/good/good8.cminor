@@ -1,0 +1,39 @@
+// tests if statement
+
+main: function integer () = {
+	if(true){
+		print "correct logic\n";
+	} else {
+		print "logical error\n";
+	}
+
+	if(true){
+		print "correct logic\n";
+	}
+	if(false){
+		print "logical error\n";
+	}
+	if(false){
+		print "logical error\n";
+	} else {
+		print "correct logic\n";
+	}
+
+	// nested if!
+
+	if(true){
+		if(false) {
+			print "logical error\n";
+		} else {
+			print "correct logic\n";
+		}
+	} else {
+		print "logical error\n";
+	}
+
+	if(false){
+
+	} else {
+		if(true) print "correct logic\n";
+	}
+}

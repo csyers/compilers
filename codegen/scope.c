@@ -35,8 +35,9 @@ int scope_increment_local_count()
 		local_count = hash_table_lookup(cursor,"0local_count");
 		(*local_count)++;
 		return (*local_count)-1;
+	} else {
+		return -10;
 	}
-	else return -1;
 }
 // leave a scope by deleting it and removing the next link to it
 // @input:

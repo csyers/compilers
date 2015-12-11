@@ -1,0 +1,12 @@
+// functions that returns integers
+
+f: function integer ();
+
+main: function integer () = {
+	print f(),'\n';
+	return f();
+}
+
+f: function integer () = {
+	return 5;
+}

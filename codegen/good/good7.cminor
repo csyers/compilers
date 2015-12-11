@@ -1,0 +1,84 @@
+// this test a bunch of expression evaluations
+
+main: function integer () = {
+	x: integer = 5;
+	y: integer = 10;
+	z: integer;
+	
+	
+	z = x+y;
+	print z,'\n';
+	z = x-y;
+	print z,'\n';
+	z = x*y;
+	print z,'\n';
+	z = y / x;
+	print z,'\n';
+	z = x % y;
+	print z,'\n';
+	z = y^x;
+	print z,'\n';
+	z = (x+y) * (x-y);
+	print z,'\n';
+	z = ((10+20)/5) * (50-(y-x));
+	print z,'\n';
+	z = -5 * y + -x;
+	print z, '\n';
+
+	f: boolean = false;
+	t: boolean = true;
+	r: boolean;
+	r = f || f;
+	print r,'\n';
+	r = true || true;
+	print r,'\n';
+	r = t || f;
+	print r,'\n';
+	r = f && f;
+	print r,'\n';
+	r = t && t;
+	print r,'\n';
+	r = t && f;
+	print r,'\n';
+	r = (true || f) && (true || true) && false;
+	print r,'\n';
+
+	r = x > y;
+	print f, '\n';
+	r = x < y;
+	print r,'\n';
+	r = x <= 5;
+	print r,'\n';
+	r = x == 5;
+	print r,'\n';
+	r = x != 5;
+	print r,'\n';
+	r = x >= 5;
+	print r,'\n';
+	r = y <= 1;
+	print r,'\n';
+	r = y >= 100;
+	print r,'\n';
+	r = y == 5;
+	print r,'\n';
+	r = y != 5;
+	print r,'\n';
+	r = (10 < 100 || 10 > 100) && true;
+	print r,'\n';
+	r = ((10 == 10) || (10 != 10)) && (5 >=5);
+	print r,'\n';
+	
+	x++;
+	x++;
+	x++;
+	print x,'\n';
+	y--;
+	y--;
+	print y,'\n';
+	print x==y,'\n';
+
+	// multiple assigns
+	x = y = z;
+	print x,'\t',y,'\t',z,'\n';
+	print (x==y) && (y==z) && (x==z), '\n';
+}

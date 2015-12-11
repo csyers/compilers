@@ -1,0 +1,7 @@
+// testing infinite for loop
+
+main: function void () = {
+	for(;;)
+		print "this is an infinite loop\n";
+	
+}

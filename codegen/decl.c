@@ -71,6 +71,15 @@ void decl_resolve( struct decl *d )
 					scope_enter();
 					param_list_resolve(d->type->params);
 					stmt_resolve(d->code);
+					if(hash_table_lookup(h,"0local_count")){
+						int *local_count = hash_table_lookup(h,"0local_count");
+						if(local_count){
+							d->symbol->local_count = *local_count;
+						} else {
+		
+						}
+					} else {
+					}
 					// leave the scope after resolution
 					scope_exit();
 				}
@@ -89,6 +98,7 @@ void decl_resolve( struct decl *d )
 			//int *local_count = hash_table_lookup(h,"0local_count");
 			//(*local_count)++;
 			sym->which = scope_increment_local_count();
+
 			printf("%s resolves to local %d\n",d->name,sym->which);
 		}
 		// assign the new symbol to the symbol of the current decl
@@ -113,6 +123,8 @@ void decl_resolve( struct decl *d )
 				int *local_count = hash_table_lookup(h,"0local_count");
 				if(local_count){
 					sym->local_count = *local_count;
+				} else {
+
 				}
 			}
 			scope_exit();

@@ -1,0 +1,28 @@
+// program that prints out a multiplication table
+
+main: function void () = {
+	r: integer;
+	c: integer;
+	i: integer;
+	j: integer;
+	s: integer;
+	c = 10;
+	r = 10;
+	for(s=0;s<=c;s++){
+		if(s==0){
+			print "*\t";
+		} else {
+			print s,"\t";
+		}
+	}
+	print "\n";
+	for(i = 1; i<=r;i++){
+		print i,"\t";
+		for(j = 1; j<=c;j++){
+			print i*j,'\t';
+			if(j%c==0){
+				print '\n';
+			}
+		}
+	}
+}

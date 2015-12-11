@@ -1,0 +1,16 @@
+// functions with many arguments
+
+lots_of_args: function void (a1: string, a2: integer, a3: boolean, a4: char, a5: integer, a6: integer);
+
+main: function void () = {
+	lots_of_args("hello",1,true,'c',10,100);
+}
+
+lots_of_args: function void (a1: string, a2: integer, a3: boolean, a4: char, a5: integer, a6: integer) = {
+	print "a1: ",a1,"\n";
+	print "a2: ",a2,"\n";
+	print "a3: ",a3,"\n";
+	print "a4: ",a4,"\n";
+	print "a5: ",a5,"\n";
+	print "a6: ",a6,"\n";
+}

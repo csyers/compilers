@@ -1,0 +1,17 @@
+// modification of globals
+
+x: integer = 5;
+b: boolean = false;
+f: function void ();
+main: function void () = {
+	print "x: ",x,"\tb: ",b,"\n";
+	f();
+	x = 10;
+	b = true;
+	print "x: ",x,"\tb: ",b,"\n";
+	f();
+} 
+
+f: function void () = {
+	print "x: ",x,"\tb: ",b,"\n";
+}
