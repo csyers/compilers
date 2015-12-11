@@ -1,7 +1,0 @@
-f: function void ();
-main: function integer () ={
-	return 5;
-}
-f: function void () = {
-	
-}
