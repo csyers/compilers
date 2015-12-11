@@ -197,10 +197,12 @@ void decl_codegen(struct decl *d, FILE* f)
 					fprintf(f,"%s: .string ",reg);
 					expr_get_string(d->value,f);
 					fprintf(f,"\n");
+					fprintf(f,".%s_address: .quad %s\n",reg,reg);
 				} else {
 					fprintf(f,".data\n");
 					symbol_code(d->symbol,reg);
 					fprintf(f,"%s: .string \"\"\n",reg);
+					fprintf(f,".%s_address: .quad %s\n",reg,reg);
 				}
 				break;
 			case TYPE_FUNCTION:

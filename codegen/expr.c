@@ -811,7 +811,7 @@ void expr_codegen( struct expr *e, FILE* f)
 			e->reg = register_alloc();					// allocate a new register for it
 			symbol_code(e->symbol,reg_name);				// gets the string of the register
 			if(e->symbol->kind == SYMBOL_GLOBAL && e->symbol->type->kind == TYPE_STRING) {		// case where e is a global string
-				fprintf(f,"\tLEA %s, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
+				fprintf(f,"\tMOV .%s_address, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
 			} else {
 				fprintf(f,"\tMOV %s, %s\n",reg_name,register_name(e->reg));	// move the register name into e->reg
 			}
@@ -1082,13 +1082,13 @@ void expr_codegen( struct expr *e, FILE* f)
 			// do nothing (supposed to be arrays)
 			break;
 		case EXPR_ASSIGN:
-			if(e->left->symbol->kind == SYMBOL_GLOBAL && e->left->symbol->type->kind == TYPE_STRING){
-				printf("error: cannot modify global string (%s)\n\n",e->left->symbol->name);
-				exit(1);
-			}
+	//		if(e->left->symbol->kind == SYMBOL_GLOBAL && e->left->symbol->type->kind == TYPE_STRING){
+	//			printf("error: cannot modify global string (%s)\n\n",e->left->symbol->name);
+	//			exit(1);
+	//		}
 			expr_codegen(e->right,f);		// codegen the right
 			symbol_code(e->left->symbol,reg_name);	// get name of the left identifier
-			fprintf(f,"\tMOV %s, %s\n",register_name(e->right->reg),reg_name);	// move the value of the right into the symbol
+			fprintf(f,"\tMOV %s, .%s_address\n",register_name(e->right->reg),reg_name);	// move the value of the right into the symbol
 			e->reg = e->right->reg;			// set this expr's register to the right hand side (allows for x=y=10)
 			break;
 		case EXPR_BLOCK:
