@@ -1081,7 +1081,11 @@ void expr_codegen( struct expr *e, FILE* f)
 		case EXPR_ARRAY:
 			// do nothing (supposed to be arrays)
 			break;
-		case EXPR_ASSIGN:		
+		case EXPR_ASSIGN:
+			if(e->left->symbol->kind == SYMBOL_GLOBAL && e->left->symbol->type->kind == TYPE_STRING){
+				printf("error: cannot modify global string (%s)\n\n",e->left->symbol->name);
+				exit(1);
+			}
 			expr_codegen(e->right,f);		// codegen the right
 			symbol_code(e->left->symbol,reg_name);	// get name of the left identifier
 			fprintf(f,"\tMOV %s, %s\n",register_name(e->right->reg),reg_name);	// move the value of the right into the symbol
