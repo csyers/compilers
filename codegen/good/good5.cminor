@@ -1,12 +1,24 @@
-// functions that return stringacters
-
+// functions that return strings
+s: string = "hello";
+s1: string;
+s2: string = "hello world";
 f: function string();
+f1: function void (str:string);
 
 main: function string () = {
+	f1(s);
+	s =  "world";
+	f1(s);
+	s1 = "does it work?";
+	f1(s1);
 	print f(),'\n';
 	return f();
 }
 
 f: function string () = {
-	return "hello world";
+	return s2;
+}
+
+f1: function void (str: string) = {
+	print str,'\n';
 }
