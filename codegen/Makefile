@@ -1,12 +1,6 @@
 CC=gcc
 
-all: cminor program
-
-program: out.s library.o
-	$(CC) out.s library.o -o program
-
-out.s: test.cminor
-	./cminor -codegen test.cminor out.s
+all: cminor gfx.o library.o
 
 cminor: main.o decl.o param_list.o stmt.o expr.o type.o scanner.o parser.tab.o token.o symbol.o hash_table.o scope.o register.o
 	$(CC) -g -O0 main.o decl.o param_list.o stmt.o expr.o type.o scanner.o parser.tab.o token.o symbol.o scope.o hash_table.o register.o -o cminor
